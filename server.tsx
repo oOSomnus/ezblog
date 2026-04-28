@@ -43,6 +43,12 @@ function Layout(props: {
             <p>
               <a href="/feed.xml">RSS</a>
             </p>
+            <hr />
+            <p style="text-align:center">
+              <small>
+                Powered by <a href="https://github.com/oOSomnus/ezblog">ezblog</a>
+              </small>
+            </p>
           </footer>
         </body>
       </html>
