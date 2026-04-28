@@ -5,6 +5,7 @@ services:
     volumes:
       - ./ezblog.config.yaml:/app/ezblog.config.yaml
       - ./content:/app/content
+      - ./static:/app/static
 
   caddy:
     image: caddy:alpine

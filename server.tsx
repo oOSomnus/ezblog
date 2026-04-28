@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { raw } from "hono/html";
 import type { Post } from "./content";
 import type { Config } from "./config";
@@ -17,6 +18,7 @@ function Layout(props: {
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
           <title>{props.title}</title>
           {props.description ? (
             <meta name="description" content={props.description} />
@@ -63,6 +65,8 @@ export function createApp(
   config: Config,
 ) {
   const app = new Hono();
+
+  app.use("/favicon.*", serveStatic({ root: "./static" }));
 
   app.get("/feed.xml", (c) => {
     const feed = generateFeed([...posts.values()], config);
