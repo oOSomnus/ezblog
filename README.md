@@ -2,6 +2,8 @@
 
 A zero-JavaScript, high-performance, one-command-deploy minimalist blog.
 
+[中文](README.zh.md)
+
 ## Features
 
 - **Zero client JS** — not a single `<script>` tag in the HTML sent to browsers

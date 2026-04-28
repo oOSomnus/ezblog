@@ -14,9 +14,14 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun test
+      - name: Lowercase owner
+        id: owner
+        run: echo "lower=${OWNER,,}" >> $GITHUB_OUTPUT
+        env:
+          OWNER: ${{ github.repository_owner }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ steps.owner.outputs.lower }}/ezblog:latest
