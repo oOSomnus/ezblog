@@ -1,12 +1,12 @@
 ---
-title: 首页
-description: 这是我的个人博客
+title: Home
+description: My personal blog
 ---
 
-# 欢迎
+# Welcome
 
-这里是我的博客。
+This is my blog.
 
-## 文章
+## Posts
 
-- [你好世界](/posts/hello)
+- [Hello World](/posts/hello)

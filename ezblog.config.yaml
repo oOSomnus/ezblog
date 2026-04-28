@@ -1,5 +1,5 @@
 site:
-  title: "我的博客"
+  title: "My Blog"
   baseUrl: "https://example.com"
 
 server:

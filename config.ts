@@ -8,6 +8,5 @@ export interface Config {
 }
 
 export function loadConfig(path: string): Config {
-  const raw = readFileSync(path, "utf-8");
-  return parse(raw) as Config;
+  return parse(readFileSync(path, "utf-8")) as Config;
 }

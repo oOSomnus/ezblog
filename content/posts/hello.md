@@ -1,19 +1,19 @@
 ---
-title: 你好世界
+title: Hello World
 date: 2024-01-01
-description: 这是我的第一篇文章
+description: My first post
 ---
 
-## 开始
+## Getting Started
 
-这是一个**非常**简单的博客。
+This is a **very** simple blog.
 
-没有 JavaScript，纯 HTML + CSS。
+No JavaScript, pure HTML + CSS.
 
 ```js
 console.log("hello");
 ```
 
-- 快
-- 简单
-- 零 JS
+- Fast
+- Simple
+- Zero JS

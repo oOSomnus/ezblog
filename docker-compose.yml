@@ -1,0 +1,22 @@
+services:
+  blog:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./ezblog.config.yaml:/app/ezblog.config.yaml
+      - ./content:/app/content
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+
+volumes:
+  caddy_data:
