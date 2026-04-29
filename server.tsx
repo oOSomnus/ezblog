@@ -28,7 +28,7 @@ function Layout(props: {
             href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css"
           />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400..700;1,400..700&display=swap"

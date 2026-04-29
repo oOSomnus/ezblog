@@ -1,6 +1,6 @@
 import { loadConfig } from "./config";
 import { loadContent } from "./content";
-import { createApp } from "./server.tsx";
+import { createApp } from "./server";
 
 const configPath = process.env.EZBLOG_CONFIG || "ezblog.config.yaml";
 const config = loadConfig(configPath);
