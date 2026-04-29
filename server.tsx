@@ -41,7 +41,7 @@ function Layout(props: {
 
               header h1 a,
               header h1 a:hover {
-                color: #000;
+                color: #1a1a1a;
                 text-decoration: none;
               }
             `)}
