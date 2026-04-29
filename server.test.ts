@@ -67,6 +67,10 @@ test("GET / returns index page HTML", async () => {
   const html = await res.text();
   expect(html).toContain("<title>Home - Test Blog</title>");
   expect(html).toContain('<meta name="description" content="Home page desc"');
+  expect(html).toContain("family=Noto+Serif+SC");
+  expect(html).toContain('font-family: "Source Serif 4", "Noto Serif SC"');
+  expect(html).toContain("header h1 a:hover");
+  expect(html).toContain("text-decoration: none");
   expect(html).toContain("<h1>Welcome</h1>");
   expect(html).toContain("This is home.");
 });
