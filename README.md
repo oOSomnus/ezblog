@@ -26,16 +26,49 @@ DOMAIN=blog.example.com docker compose up -d
 
 ## Directory Structure
 
+Each post is a **directory** containing `index.md` plus its images:
+
 ```
 content/
-├── index.md         # Home page
-├── 404.md           # 404 page
-├── drafts/          # Drafts (not published)
+├── index.md              # Home page
+├── 404.md                # 404 page
+├── drafts/               # Drafts (not published)
 └── posts/
-    └── hello.md     # Blog post
+    └── hello/
+        ├── index.md      # Post content
+        └── demo.svg      # Images live alongside the post
+static/
+└── favicon.svg           # Site-wide static assets
 ```
 
-URL mirrors the file path: `content/posts/hello.md` → `/posts/hello`
+URL mirrors the directory path: `content/posts/hello/` → `/posts/hello/`
+
+Post URLs use a trailing slash (`/posts/hello/`) so that relative image paths resolve correctly.
+Requests without trailing slash get a **301 redirect** (`/posts/hello` → `/posts/hello/`).
+
+### Images
+
+Two ways to include images:
+
+**1. Article images** — drop files into the post directory, reference with relative path:
+
+```markdown
+![demo](./demo.svg)
+```
+
+From `/posts/hello/`, `./demo.svg` resolves to `/posts/hello/demo.svg`.
+
+**2. Static assets** — put files in `static/`, reference with absolute path:
+
+```markdown
+![favicon](/favicon.svg)
+```
+
+Supported formats: `png`, `jpg`, `jpeg`, `webp`, `svg`, `gif`.
+`.md` files and non-whitelisted extensions are blocked from direct access.
+Images are served directly — no build step, no optimization pipeline.
+Compress your images before adding them (e.g. with [Squoosh](https://squoosh.app)).
+Relative image `src` paths are automatically converted to absolute URLs in the RSS feed.
 
 ## Post Format
 

@@ -26,16 +26,49 @@ DOMAIN=blog.example.com docker compose up -d
 
 ## 目录结构
 
+每篇文章是一个**目录**，包含 `index.md` 和它的图片：
+
 ```
 content/
-├── index.md         # 首页
-├── 404.md           # 404 页面
-├── drafts/          # 草稿（不发布）
+├── index.md              # 首页
+├── 404.md                # 404 页面
+├── drafts/               # 草稿（不发布）
 └── posts/
-    └── hello.md     # 文章
+    └── hello/
+        ├── index.md      # 文章内容
+        └── demo.svg      # 图片和文章放在一起
+static/
+└── favicon.svg           # 站点级静态资源
 ```
 
-URL 和文件路径一一对应：`content/posts/hello.md` → `/posts/hello`
+URL 与目录路径一一对应：`content/posts/hello/` → `/posts/hello/`
+
+文章 URL 带尾斜杠（`/posts/hello/`），确保相对路径图片解析正确。
+无尾斜杠的请求会自动 **301 重定向**（`/posts/hello` → `/posts/hello/`）。
+
+### 图片
+
+两种引用方式：
+
+**1. 文章配图** — 把文件放入文章目录，用相对路径引用：
+
+```markdown
+![demo](./demo.svg)
+```
+
+从 `/posts/hello/` 访问时，`./demo.svg` 解析为 `/posts/hello/demo.svg`。
+
+**2. 静态资源** — 把文件放入 `static/`，用绝对路径引用：
+
+```markdown
+![favicon](/favicon.svg)
+```
+
+支持的格式：`png`、`jpg`、`jpeg`、`webp`、`svg`、`gif`。
+`.md` 源文件和非法扩展名会被拦截，无法直接访问。
+图片直接提供，无构建步骤，无优化管线。
+添加图片前先压缩（推荐 [Squoosh](https://squoosh.app)）。
+RSS feed 中相对路径图片 `src` 会自动转为绝对 URL。
 
 ## 文章格式
 

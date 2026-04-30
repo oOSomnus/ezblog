@@ -9,4 +9,4 @@ This is my blog.
 
 ## Posts
 
-- [Hello World](/posts/hello)
+- [Hello World](/posts/hello/)

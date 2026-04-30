@@ -9,10 +9,10 @@ const config: Config = {
   content: { dir: "./content" },
 };
 
-test("generates valid Atom XML feed", () => {
+test("generates valid Atom XML feed with full content", () => {
   const posts: Post[] = [
-    { slug: "posts/a", url: "/posts/a", title: "Post A", date: "2024-02-01", html: "" },
-    { slug: "posts/b", url: "/posts/b", title: "Post B", date: "2024-01-01", html: "" },
+    { slug: "posts/a", url: "/posts/a", title: "Post A", date: "2024-02-01", html: "<p>Content A</p>" },
+    { slug: "posts/b", url: "/posts/b", title: "Post B", date: "2024-01-01", html: "<p>Content B</p>" },
     { slug: "posts/c", url: "/posts/c", title: "No Date Post", html: "" },
   ];
 
@@ -29,4 +29,32 @@ test("generates valid Atom XML feed", () => {
 
   // Post without date is excluded
   expect(feed).not.toContain("No Date Post");
+
+  // Each entry includes full content
+  expect(feed).toContain('<content type="html">');
+  expect(feed).toContain('&lt;p&gt;Content A&lt;/p&gt;');
+});
+
+test("converts relative img src to absolute URLs in feed", () => {
+  const posts: Post[] = [
+    {
+      slug: "posts/with-images",
+      url: "/posts/with-images",
+      title: "Image Post",
+      date: "2024-03-01",
+      html: '<p>Look:</p>\n<img src="./demo.png" alt="demo">\n<img src="./sub/photo.jpg">',
+    },
+  ];
+
+  const feed = generateFeed(posts, config);
+
+  // Quotes are escaped in XML content
+  expect(feed).toContain(
+    'src=&quot;https://blog.example.com/posts/with-images/demo.png&quot;',
+  );
+  expect(feed).toContain(
+    'src=&quot;https://blog.example.com/posts/with-images/sub/photo.jpg&quot;',
+  );
+  // External URLs should not be touched
+  expect(feed).not.toContain('src=&quot;https://blog.example.com/https://');
 });

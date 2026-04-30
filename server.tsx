@@ -87,6 +87,17 @@ export function createApp(
 
   app.use("/favicon.*", serveStatic({ root: "./static" }));
 
+  // Serve image files from content dir with extension whitelist
+  const imgExts = ["png", "jpg", "jpeg", "webp", "svg", "gif"];
+  app.use("*", async (c, next) => {
+    const path = c.req.path;
+    const ext = path.split(".").pop()?.toLowerCase();
+    if (ext && imgExts.includes(ext)) {
+      return serveStatic({ root: config.content.dir })(c, next);
+    }
+    await next();
+  });
+
   app.get("/feed.xml", (c) => {
     const feed = generateFeed([...posts.values()], config);
     return c.body(feed, 200, {
@@ -120,10 +131,18 @@ export function createApp(
 
   app.get("*", (c) => {
     const path = c.req.path;
-    const slug = path === "/" ? "" : path.slice(1);
+
+    // Strip trailing slash for slug lookup
+    let slug = path.slice(1);
+    const hasTrailingSlash = slug.endsWith("/");
+    if (hasTrailingSlash) slug = slug.slice(0, -1);
 
     const post = posts.get(slug);
     if (post) {
+      // Redirect to canonical trailing-slash URL so relative image paths resolve correctly
+      if (!hasTrailingSlash) {
+        return c.redirect(path + "/", 301);
+      }
       const pageTitle = `${post.title} - ${config.site.title}`;
       return c.html(
         (

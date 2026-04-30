@@ -35,10 +35,12 @@ function walk(dir: string, urlPrefix: string): Post[] {
       const { fm, body } = parseFrontMatter(raw);
       const html = marked.parse(body, { async: false }) as string;
       const baseName = entry.replace(".md", "");
-      const slug = urlPrefix + (baseName === "index" ? "" : baseName);
+      const slug = baseName === "index"
+        ? urlPrefix.slice(0, -1) // strip trailing "/" from directory prefix
+        : urlPrefix + baseName;
       results.push({
         slug,
-        url: slug ? "/" + slug : "/",
+        url: slug ? "/" + slug + "/" : "/",
         title: fm.title || baseName,
         date: fm.date,
         description: fm.description,
