@@ -48,21 +48,13 @@ Requests without trailing slash get a **301 redirect** (`/posts/hello` → `/pos
 
 ### Images
 
-Two ways to include images:
-
-**1. Article images** — drop files into the post directory, reference with relative path:
+Drop image files into the post directory, reference with relative path:
 
 ```markdown
-![demo](./demo.svg)
+![gopher](./gopher.png)
 ```
 
-From `/posts/hello/`, `./demo.svg` resolves to `/posts/hello/demo.svg`.
-
-**2. Static assets** — put files in `static/`, reference with absolute path:
-
-```markdown
-![favicon](/favicon.svg)
-```
+From `/posts/hello/`, `./gopher.png` resolves to `/posts/hello/gopher.png`.
 
 Supported formats: `png`, `jpg`, `jpeg`, `webp`, `svg`, `gif`.
 `.md` files and non-whitelisted extensions are blocked from direct access.

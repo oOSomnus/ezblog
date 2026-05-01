@@ -48,21 +48,13 @@ URL 与目录路径一一对应：`content/posts/hello/` → `/posts/hello/`
 
 ### 图片
 
-两种引用方式：
-
-**1. 文章配图** — 把文件放入文章目录，用相对路径引用：
+把图片文件放入文章目录，用相对路径引用：
 
 ```markdown
-![demo](./demo.svg)
+![gopher](./gopher.png)
 ```
 
-从 `/posts/hello/` 访问时，`./demo.svg` 解析为 `/posts/hello/demo.svg`。
-
-**2. 静态资源** — 把文件放入 `static/`，用绝对路径引用：
-
-```markdown
-![favicon](/favicon.svg)
-```
+从 `/posts/hello/` 访问时，`./gopher.png` 解析为 `/posts/hello/gopher.png`。
 
 支持的格式：`png`、`jpg`、`jpeg`、`webp`、`svg`、`gif`。
 `.md` 源文件和非法扩展名会被拦截，无法直接访问。

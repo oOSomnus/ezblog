@@ -10,15 +10,11 @@ This is a **very** simple blog.
 
 No JavaScript, pure HTML + CSS.
 
-### Images — two ways
+### Images
 
-Static assets from `static/` (absolute path):
+Drop image files into the post directory:
 
-![favicon](/favicon.svg)
-
-Article images from post directory (relative path):
-
-![demo](./demo.svg)
+![gopher](./gopher.png)
 
 ```js
 console.log("hello");
