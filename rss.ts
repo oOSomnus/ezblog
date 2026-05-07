@@ -1,4 +1,5 @@
 import type { Post } from "./content";
+import { postUrl } from "./content";
 import type { Config } from "./config";
 
 function esc(s: string): string {
@@ -30,8 +31,8 @@ export function generateFeed(posts: Post[], config: Config): string {
         return (
           `  <entry>\n` +
           `    <title>${esc(p.title)}</title>\n` +
-          `    <link href="${baseUrl}${p.url}"/>\n` +
-          `    <id>${baseUrl}${p.url}</id>\n` +
+          `    <link href="${baseUrl}${postUrl(p.slug)}"/>\n` +
+          `    <id>${baseUrl}${postUrl(p.slug)}</id>\n` +
           `    <updated>${p.date}</updated>\n` +
           `    <summary>${esc(p.description || "")}</summary>\n` +
           `    <content type="html">${esc(absHtml)}</content>\n` +

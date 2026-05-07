@@ -77,6 +77,19 @@ function Layout(props: {
   );
 }
 
+function renderPage(
+  title: string,
+  description: string | undefined,
+  config: Config,
+  bodyHtml: string,
+): string {
+  return (
+    <Layout title={title} description={description} config={config}>
+      {raw(bodyHtml)}
+    </Layout>
+  ).toString();
+}
+
 export function createApp(
   posts: Map<string, Post>,
   indexPost: Post | null,
@@ -98,35 +111,63 @@ export function createApp(
     await next();
   });
 
+  // Pre-render and cache all pages at startup
+  const cachedPages = new Map<string, string>();
+
+  // Index page
+  if (indexPost) {
+    const pageTitle = `${indexPost.title} - ${config.site.title}`;
+    cachedPages.set(
+      "",
+      renderPage(pageTitle, indexPost.description, config, indexPost.html),
+    );
+  }
+
+  // Post pages
+  for (const [slug, post] of posts) {
+    const pageTitle = `${post.title} - ${config.site.title}`;
+    const articleHtml = [
+      "<article>",
+      `<h1>${post.title}</h1>`,
+      post.date ? `<time datetime="${post.date}">${post.date}</time>` : "",
+      post.html,
+      "</article>",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    cachedPages.set(slug, renderPage(pageTitle, post.description, config, articleHtml));
+  }
+
+  // 404 page
+  const notFoundHtml = notFoundPost
+    ? renderPage(`404 - ${config.site.title}`, undefined, config, notFoundPost.html)
+    : renderPage(
+        `404 - ${config.site.title}`,
+        undefined,
+        config,
+        "<h1>404 Not Found</h1>",
+      );
+
+  // Empty index fallback
+  const emptyIndexHtml = renderPage(
+    config.site.title,
+    undefined,
+    config,
+    "<p>No content yet.</p>",
+  );
+
+  // RSS feed (cached)
+  const cachedFeed = generateFeed([...posts.values()], config);
+
   app.get("/feed.xml", (c) => {
-    const feed = generateFeed([...posts.values()], config);
-    return c.body(feed, 200, {
+    return c.body(cachedFeed, 200, {
       "Content-Type": "application/atom+xml; charset=utf-8",
     });
   });
 
   app.get("/", (c) => {
-    if (!indexPost) {
-      return c.html(
-        (
-          <Layout title={config.site.title} config={config}>
-            <p>No content yet.</p>
-          </Layout>
-        ).toString(),
-      );
-    }
-    const pageTitle = `${indexPost.title} - ${config.site.title}`;
-    return c.html(
-      (
-        <Layout
-          title={pageTitle}
-          description={indexPost.description}
-          config={config}
-        >
-          {raw(indexPost.html)}
-        </Layout>
-      ).toString(),
-    );
+    const html = cachedPages.get("") || emptyIndexHtml;
+    return c.html(html);
   });
 
   app.get("*", (c) => {
@@ -137,52 +178,17 @@ export function createApp(
     const hasTrailingSlash = slug.endsWith("/");
     if (hasTrailingSlash) slug = slug.slice(0, -1);
 
-    const post = posts.get(slug);
-    if (post) {
+    const html = cachedPages.get(slug);
+    if (html) {
       // Redirect to canonical trailing-slash URL so relative image paths resolve correctly
       if (!hasTrailingSlash) {
         return c.redirect(path + "/", 301);
       }
-      const pageTitle = `${post.title} - ${config.site.title}`;
-      return c.html(
-        (
-          <Layout
-            title={pageTitle}
-            description={post.description}
-            config={config}
-          >
-            <article>
-              <h1>{post.title}</h1>
-              {post.date ? (
-                <time datetime={post.date}>{post.date}</time>
-              ) : null}
-              {raw(post.html)}
-            </article>
-          </Layout>
-        ).toString(),
-      );
+      return c.html(html);
     }
 
     c.status(404);
-    if (notFoundPost) {
-      return c.html(
-        (
-          <Layout
-            title={`404 - ${config.site.title}`}
-            config={config}
-          >
-            {raw(notFoundPost.html)}
-          </Layout>
-        ).toString(),
-      );
-    }
-    return c.html(
-      (
-        <Layout title={`404 - ${config.site.title}`} config={config}>
-          <h1>404 Not Found</h1>
-        </Layout>
-      ).toString(),
-    );
+    return c.html(notFoundHtml);
   });
 
   return app;

@@ -1,6 +1,6 @@
 import { test, expect, beforeAll, afterAll } from "bun:test";
 import { mkdirSync, writeFileSync, rmSync } from "fs";
-import { loadContent } from "./content";
+import { loadContent, postUrl } from "./content";
 
 let tmpDir: string;
 
@@ -37,7 +37,7 @@ test("parses front matter and renders markdown to HTML", () => {
   expect(post!.date).toBe("2024-01-15");
   expect(post!.description).toBe("A test post");
   expect(post!.slug).toBe("posts/hello");
-  expect(post!.url).toBe("/posts/hello/");
+  expect(postUrl(post!.slug)).toBe("/posts/hello/");
   expect(post!.html).toContain("<h1>Hello</h1>");
   expect(post!.html).toContain("<strong>bold</strong>");
 });
@@ -72,7 +72,7 @@ test("maps index.md to indexPost, not posts map", () => {
 
   expect(indexPost).toBeDefined();
   expect(indexPost!.title).toBe("Home");
-  expect(indexPost!.url).toBe("/");
+  expect(postUrl(indexPost!.slug)).toBe("/");
   expect(posts.has("")).toBe(false);
 });
 
@@ -110,7 +110,7 @@ test("handles A2 directory structure: index.md inside post dir => slug has no tr
   const post = posts.get("posts/with-images");
   expect(post).toBeDefined();
   expect(post!.slug).toBe("posts/with-images");
-  expect(post!.url).toBe("/posts/with-images/");
+  expect(postUrl(post!.slug)).toBe("/posts/with-images/");
   expect(post!.slug).not.toEndWith("/");
 });
 

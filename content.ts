@@ -5,11 +5,14 @@ import { marked } from "marked";
 
 export interface Post {
   slug: string;
-  url: string;
   title: string;
   date?: string;
   description?: string;
   html: string;
+}
+
+export function postUrl(slug: string): string {
+  return slug ? "/" + slug + "/" : "/";
 }
 
 function parseFrontMatter(md: string): { fm: Record<string, any>; body: string } {
@@ -40,7 +43,6 @@ function walk(dir: string, urlPrefix: string): Post[] {
         : urlPrefix + baseName;
       results.push({
         slug,
-        url: slug ? "/" + slug + "/" : "/",
         title: fm.title || baseName,
         date: fm.date,
         description: fm.description,
