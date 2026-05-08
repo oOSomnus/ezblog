@@ -57,3 +57,53 @@ test("converts relative img src to absolute URLs in feed", () => {
   // External URLs should not be touched
   expect(feed).not.toContain('src=&quot;https://blog.example.com/https://');
 });
+
+test("replaces KaTeX inline math with $tex$ in feed", () => {
+  const posts: Post[] = [
+    {
+      slug: "posts/math",
+      title: "Math Post",
+      date: "2024-04-01",
+      html: '<p>Einstein: <span data-tex="E=mc^2" class="katex"><span class="katex">...</span></span>.</p>',
+    },
+  ];
+
+  const feed = generateFeed(posts, config);
+
+  // Should contain the math source text, not KaTeX spans
+  expect(feed).toContain("$E=mc^2$");
+  expect(feed).not.toContain('class="katex"');
+});
+
+test("replaces KaTeX display math with $$tex$$ in feed", () => {
+  const posts: Post[] = [
+    {
+      slug: "posts/math",
+      title: "Display Math",
+      date: "2024-04-01",
+      html: '<p><span data-tex="x^2+y^2" data-display="true" class="katex"><span class="katex">...</span></span></p>',
+    },
+  ];
+
+  const feed = generateFeed(posts, config);
+
+  // Display math detected and wrapped in $$
+  expect(feed).toContain("$$x^2+y^2$$");
+  expect(feed).not.toContain('class="katex"');
+});
+
+test("preserves non-math content alongside math replacement", () => {
+  const posts: Post[] = [
+    {
+      slug: "posts/mixed",
+      title: "Mixed",
+      date: "2024-04-01",
+      html: '<p>Hello <span data-tex="x" class="katex"><span class="katex">...</span></span> world</p>',
+    },
+  ];
+
+  const feed = generateFeed(posts, config);
+
+  expect(feed).toContain("Hello $x$ world");
+  expect(feed).not.toContain("katex");
+});

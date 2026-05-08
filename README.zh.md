@@ -8,6 +8,7 @@
 
 - **零客户端 JS**——浏览器收到的 HTML 里没有一个 `<script>` 标签
 - **Markdown 写作**——全部页面都是 `.md` 文件，`git push` 即发布
+- **LaTeX 数学公式**——服务端 KaTeX 渲染，$x^2$ 行内和 $$...$$ 块级
 - **全内存渲染**——启动时预解析全部 Markdown 到内存，请求时零 IO
 - **Docker Compose 一键部署**——含 Caddy 自动 HTTPS
 - **RSS**——内置 Atom feed，`/feed.xml`
@@ -62,6 +63,24 @@ URL 与目录路径一一对应：`content/posts/hello/` → `/posts/hello/`
 添加图片前先压缩（推荐 [Squoosh](https://squoosh.app)）。
 RSS feed 中相对路径图片 `src` 会自动转为绝对 URL。
 
+### 数学公式
+
+服务端 KaTeX 渲染，零客户端 JavaScript：
+
+```markdown
+行内公式：$E=mc^2$
+
+块级公式：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+```
+
+用 `\$` 转义字面美元符号。
+无效 LaTeX 会阻止服务器启动并给出清晰的错误信息。
+RSS feed 中公式以 `$tex$` 源码形式展示，保证可读性。
+
 ## 文章格式
 
 ```markdown
@@ -115,6 +134,7 @@ Caddy 自动申请 HTTPS 证书并反向代理到博客服务。
 - [Bun](https://bun.sh) 运行时
 - [Hono](https://hono.dev) HTTP 框架 + JSX 渲染
 - [marked](https://marked.js.org) Markdown 解析
+- [KaTeX](https://katex.org) 服务端 LaTeX 渲染
 - [YAML](https://yaml.org) front matter
 - [water.css](https://watercss.kognise.dev) 无 class CSS
 - [Caddy](https://caddyserver.com) 反向代理 + 自动 HTTPS

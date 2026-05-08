@@ -8,6 +8,7 @@ A zero-JavaScript, high-performance, one-command-deploy minimalist blog.
 
 - **Zero client JS** — not a single `<script>` tag in the HTML sent to browsers
 - **Markdown writing** — every page is a `.md` file; `git push` to publish
+- **LaTeX math** — server-side KaTeX rendering, $x^2$ inline and $$...$$ block
 - **In-memory rendering** — all Markdown is pre-parsed into memory at startup, zero IO per request
 - **Docker Compose deploy** — Caddy auto-HTTPS included
 - **RSS** — built-in Atom feed at `/feed.xml`
@@ -62,6 +63,24 @@ Images are served directly — no build step, no optimization pipeline.
 Compress your images before adding them (e.g. with [Squoosh](https://squoosh.app)).
 Relative image `src` paths are automatically converted to absolute URLs in the RSS feed.
 
+### Math
+
+Server-side KaTeX rendering, zero client JavaScript:
+
+```markdown
+Inline: $E=mc^2$
+
+Block:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+```
+
+Use `\$` to escape a literal dollar sign.
+Invalid LaTeX prevents server startup with a clear error message.
+RSS feed shows `$tex$` source text for readability.
+
 ## Post Format
 
 ```markdown
@@ -115,6 +134,7 @@ Caddy automatically obtains HTTPS certificates and reverse-proxies to the blog s
 - [Bun](https://bun.sh) runtime
 - [Hono](https://hono.dev) HTTP framework + JSX rendering
 - [marked](https://marked.js.org) Markdown parsing
+- [KaTeX](https://katex.org) server-side LaTeX rendering
 - [YAML](https://yaml.org) front matter
 - [water.css](https://watercss.kognise.dev) classless CSS
 - [Caddy](https://caddyserver.com) reverse proxy + automatic HTTPS

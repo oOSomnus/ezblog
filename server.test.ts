@@ -64,6 +64,16 @@ beforeAll(() => {
   writeFileSync(`${imgDir}/animated.gif`, "GIF89a");
   writeFileSync(`${imgDir}/modern.webp`, "RIFF....WEBP");
 
+  // Post with math
+  writeFileSync(`${postsDir}/math.md`, [
+    "---",
+    "title: Math Post",
+    "date: 2024-05-01",
+    "---",
+    "",
+    "Einstein: $E=mc^2$.",
+  ].join("\n"));
+
   config = {
     site: { title: "Test Blog", baseUrl: "https://test.example.com" },
     server: { port: 0 },
@@ -174,6 +184,29 @@ test("blocks non-whitelisted extensions", async () => {
 
   const res = await app.request("/posts/with-images/hack.exe");
   expect(res.status).toBe(404);
+});
+
+test("injects KaTeX CSS in <head> when post has math", async () => {
+  const { posts, indexPost, notFoundPost } = loadContent(tmpDir);
+  const app = createApp(posts, indexPost, notFoundPost, config);
+  const res = await app.request("/posts/math/");
+
+  expect(res.status).toBe(200);
+  const html = await res.text();
+  expect(html).toContain('<span class="katex">');
+  // KaTeX CSS should be in a <style> tag
+  expect(html).toContain(".katex{");
+  expect(html).toContain("KaTeX_Main");
+});
+
+test("does NOT inject KaTeX CSS when post has no math", async () => {
+  const { posts, indexPost, notFoundPost } = loadContent(tmpDir);
+  const app = createApp(posts, indexPost, notFoundPost, config);
+  const res = await app.request("/posts/hello/");
+
+  expect(res.status).toBe(200);
+  const html = await res.text();
+  expect(html).not.toContain('.katex {');
 });
 
 

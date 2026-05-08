@@ -2,6 +2,10 @@ import { readFileSync, readdirSync, statSync } from "fs";
 import { join, extname } from "path";
 import { parse as parseYaml } from "yaml";
 import { marked } from "marked";
+import { latexExtension, preprocessMathBlocks } from "./latex";
+
+// Register LaTeX support globally
+marked.use({ extensions: [latexExtension] });
 
 export interface Post {
   slug: string;
@@ -9,6 +13,7 @@ export interface Post {
   date?: string;
   description?: string;
   html: string;
+  hasMath?: boolean;
 }
 
 export function postUrl(slug: string): string {
@@ -36,18 +41,25 @@ function walk(dir: string, urlPrefix: string): Post[] {
     } else if (extname(entry) === ".md") {
       const raw = readFileSync(fullPath, "utf-8");
       const { fm, body } = parseFrontMatter(raw);
-      const html = marked.parse(body, { async: false }) as string;
-      const baseName = entry.replace(".md", "");
-      const slug = baseName === "index"
-        ? urlPrefix.slice(0, -1) // strip trailing "/" from directory prefix
-        : urlPrefix + baseName;
-      results.push({
-        slug,
-        title: fm.title || baseName,
-        date: fm.date,
-        description: fm.description,
-        html,
-      });
+      try {
+        const preprocessed = preprocessMathBlocks(body);
+        const html = marked.parse(preprocessed, { async: false }) as string;
+        const hasMath = html.includes('<span class="katex">');
+        const baseName = entry.replace(".md", "");
+        const slug = baseName === "index"
+          ? urlPrefix.slice(0, -1)
+          : urlPrefix + baseName;
+        results.push({
+          slug,
+          title: fm.title || baseName,
+          date: fm.date,
+          description: fm.description,
+          html,
+          hasMath: hasMath || undefined,
+        });
+      } catch (e: any) {
+        throw new Error(`LaTeX error in ${fullPath}: ${e.message}`);
+      }
     }
   }
   return results;

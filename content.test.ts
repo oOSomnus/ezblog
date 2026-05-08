@@ -130,3 +130,49 @@ test("ignores non-md files like images in post directory", () => {
   expect(posts.has("posts/with-images/demo")).toBe(false);
   expect(posts.has("posts/with-images")).toBe(true);
 });
+
+test("sets hasMath=true when post contains inline math", () => {
+  const postsDir = `${tmpDir}/posts`;
+  writeFileSync(`${postsDir}/math.md`, [
+    "---",
+    "title: Math Post",
+    "---",
+    "",
+    "Einstein said $E=mc^2$.",
+  ].join("\n"));
+
+  const { posts } = loadContent(tmpDir);
+  const post = posts.get("posts/math");
+  expect(post).toBeDefined();
+  expect(post!.hasMath).toBe(true);
+  expect(post!.html).toContain('class="katex"');
+});
+
+test("sets hasMath=false when post contains no math", () => {
+  const postsDir = `${tmpDir}/posts`;
+  writeFileSync(`${postsDir}/plain.md`, [
+    "---",
+    "title: Plain Post",
+    "---",
+    "",
+    "Just markdown with **bold** and *italic*.",
+  ].join("\n"));
+
+  const { posts } = loadContent(tmpDir);
+  const post = posts.get("posts/plain");
+  expect(post).toBeDefined();
+  expect(post!.hasMath).toBeFalsy();
+});
+
+test("throws error with file path on invalid LaTeX", () => {
+  const postsDir = `${tmpDir}/posts`;
+  writeFileSync(`${postsDir}/badmath.md`, [
+    "---",
+    "title: Bad Math",
+    "---",
+    "",
+    "$\\invalid$",
+  ].join("\n"));
+
+  expect(() => loadContent(tmpDir)).toThrow(/badmath/);
+});

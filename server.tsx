@@ -4,12 +4,14 @@ import { raw } from "hono/html";
 import type { Post } from "./content";
 import type { Config } from "./config";
 import { generateFeed } from "./rss";
+import { KATEX_CSS } from "./latex";
 
 function Layout(props: {
   title: string;
   description?: string;
   config: Config;
   children?: any;
+  hasMath?: boolean;
 }) {
   return (
     <>
@@ -52,6 +54,9 @@ function Layout(props: {
             title={props.config.site.title}
             href="/feed.xml"
           />
+          {props.hasMath ? (
+            <style>{raw(KATEX_CSS)}</style>
+          ) : null}
         </head>
         <body>
           <header>
@@ -82,9 +87,10 @@ function renderPage(
   description: string | undefined,
   config: Config,
   bodyHtml: string,
+  hasMath?: boolean,
 ): string {
   return (
-    <Layout title={title} description={description} config={config}>
+    <Layout title={title} description={description} config={config} hasMath={hasMath}>
       {raw(bodyHtml)}
     </Layout>
   ).toString();
@@ -119,7 +125,7 @@ export function createApp(
     const pageTitle = `${indexPost.title} - ${config.site.title}`;
     cachedPages.set(
       "",
-      renderPage(pageTitle, indexPost.description, config, indexPost.html),
+      renderPage(pageTitle, indexPost.description, config, indexPost.html, indexPost.hasMath),
     );
   }
 
@@ -135,7 +141,7 @@ export function createApp(
     ]
       .filter(Boolean)
       .join("\n");
-    cachedPages.set(slug, renderPage(pageTitle, post.description, config, articleHtml));
+    cachedPages.set(slug, renderPage(pageTitle, post.description, config, articleHtml, post.hasMath));
   }
 
   // 404 page
